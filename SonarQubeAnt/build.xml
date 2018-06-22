@@ -1,0 +1,75 @@
+<project name="SonarQubeAnt" default="all" basedir="." xmlns:sonar="antlib:org.sonar.ant">
+	<description>
+		Create SonarQube Report For Ant Project
+	</description>
+
+	<property name="projectName" value="SonarQubeAnt" />
+
+	<!-- Java sources -->
+	<property name="src.dir" location="src" />
+
+	<!-- Java classes -->
+	<property name="build.dir" location="bin" />
+
+	<!-- Output, Jar -->
+	<property name="dist.dir" location="dist" />
+	
+	<tstamp>
+     <format property="time.stamp" pattern="yyyy-MM-dd_HH-mm-ss"/>
+	</tstamp>
+
+	 
+	<!-- Define the SonarQube project properties -->
+	<property name="sonar.host.url" value="http://localhost:9000" />
+	<property name="sonar.projectKey" value="com.sivajavatechie.sonarqube.ant" />
+	<property name="sonar.projectName" value="SonarQubeAnt" />
+	<property name="sonar.projectVersion" value="1.0" />
+	<property name="sonar.sources" value="src" />
+	<property name="sonar.java.binaries" value="bin" />
+	<property name="sonar.java.libraries" value="dist/*.jar" />
+	
+	<!--  Define SonarQube Scanner for Ant Target -->
+	<target name="sonar">
+	    <taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
+	<!-- Update the following line, or put the "sonarqube-ant-task-*.jar" file in your own directory or class path and provide the below path correctly.
+	In this example I copied the jar to root project folder -->        
+	<classpath path="sonarqube-ant-task-2.5.jar" />
+	    </taskdef>
+	<!-- Execute SonarQube Scanner for Ant Analysis -->
+	    <sonar:sonar />
+	</target>
+
+	<target name="init">
+		<!-- Create the time stamp -->
+		<tstamp />
+		<!-- Create the build directory structure used by compile -->
+		<mkdir dir="${build.dir}" />
+	</target>
+
+	<target name="compile" depends="init" description="compile the source ">
+		<!-- Compile the java code from ${src.dir} into ${build.dir} -->
+		<javac includeantruntime="false" srcdir="${src.dir}" destdir="${build.dir}" />
+	</target>
+
+	<target name="dist" depends="compile" description="package, output to JAR">
+
+		<!-- Create the distribution directory -->
+		<mkdir dir="${dist.dir}" />
+
+		<!-- Put everything in ${build} into the {$projectName}-${time.stamp}.jar file -->
+		<jar jarfile="${dist.dir}/${projectName}-${time.stamp}.jar" basedir="${build.dir}">
+			<manifest>
+				<attribute name="Main-Class" value="com.sivajavatechie.sonarqube.ant.SonarQubeAnt" />
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="clean" description="clean up">
+		<delete dir="${build.dir}" />
+		<delete dir="${dist.dir}" />
+	</target>
+
+	<!-- Default, run this -->
+	<target name="all" depends="clean, compile, dist" />
+
+</project>
