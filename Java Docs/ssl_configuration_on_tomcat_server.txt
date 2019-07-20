@@ -1,0 +1,27 @@
+							Configure SSL/TSL on Tomcat Server
+						---------------------------------------------------
+						
+1) Create a keystore file to store the server's private key and self-signed certificate by executing the following command
+
+Windows:
+
+"%JAVA_HOME%\bin\keytool" -genkey -alias tomcat -keyalg RSA
+
+Unix:
+
+$JAVA_HOME/bin/keytool -genkey -alias tomcat -keyalg RSA
+and specify a password value of "changeit"
+
+	
+2)Go to the $CATALINA_BASE/conf/server.xml and add below configuration in SSL section	
+		
+<!-- Define a SSL Coyote HTTP/1.1 Connector on port 8443 -->
+<Connector
+           protocol="org.apache.coyote.http11.Http11NioProtocol"
+           port="8443" maxThreads="200"
+           scheme="https" secure="true" SSLEnabled="true"
+           keystoreFile="${user.home}/.keystore" keystorePass="changeit"
+           clientAuth="false" sslProtocol="TLS"/>
+		   
+		   
+Restart the tomcat server and access the SSL connection on https://localhost:8443
